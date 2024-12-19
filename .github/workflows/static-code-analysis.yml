@@ -1,10 +1,10 @@
-name: Static Code Analysis
+name: Static Code Analysis for Java Maven
+
 on:
-  workflow_call:
-    inputs:
-      language:
-        required: true
-        type: string
+  push: # Trigger the workflow on push events
+    branches:
+      - '**' # Matches all branches; adjust as needed
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -12,10 +12,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Run Static Analysis
-        run: |
-          if [ ${{ inputs.language }} == "javascript" ]; then
-            npm run lint
-          elif [ ${{ inputs.language }} == "java" ]; then
-            ./gradlew check
-          fi
+      - name: Set Up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin' # Use Eclipse Temurin for JDK
+          java-version: '17'      # Adjust Java version as needed
+
+      - name: Install Maven Dependencies
+        run: mvn clean install -DskipTests=true
+
+      - name: Run Static Code Analysis
+        run: mvn checkstyle:check
