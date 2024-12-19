@@ -1,0 +1,21 @@
+name: Static Code Analysis
+on:
+  workflow_call:
+    inputs:
+      language:
+        required: true
+        type: string
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Run Static Analysis
+        run: |
+          if [ ${{ inputs.language }} == "javascript" ]; then
+            npm run lint
+          elif [ ${{ inputs.language }} == "java" ]; then
+            ./gradlew check
+          fi
